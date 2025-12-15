@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#8b5cf6">
-    <title>Lifestyle Score Tracker</title>
+    <title>Kim's Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -74,8 +74,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 Lifestyle Score Tracker</h1>
-            <p>Bouw aan een beter leven, één dag tegelijk</p>
+            <h1>🎯 Kim's Dashboard</h1>
+            <p>Bouw aan een beter leven, één dag tegelijk. Je kan het lieve schat!</p>
             <p id="dateTime" style="margin-top: 10px; font-size: 1.1rem; opacity: 0.9;"></p>
         </div>
         
@@ -116,27 +116,27 @@
         <button class="reset-btn" onclick="resetAll()">Reset Alle Data</button>
     </div>
     <script>
-        const STORAGE_KEY = 'lifestyle_tracker_v3';
+        const STORAGE_KEY = 'kims_dashboard_v1';
         const categories = [
             { key: 'goodSleep', label: 'Goede Nachtrust', points: 1 },
             { key: 'sport', label: 'Sporten', points: 1 },
             { key: 'healthyEating', label: 'Gezond Eten', points: 1 },
             { key: 'meditation', label: 'Meditatie', points: 1 },
-            { key: 'personalDevelopment', label: 'Persoonlijke Ontwikkeling', points: 1 },
-            { key: 'noDrink', label: 'Geen Alcohol', pointsYes: 0, pointsNo: -2 },
+            { key: 'personalDevelopment', label: 'Tijd voor Mijzelf Genomen', points: 1 },
+            { key: 'noDrink', label: 'Geen Snacks', pointsYes: 0, pointsNo: -2 },
             { key: 'noDrugs', label: 'Geen Ander Slecht Gedrag', pointsYes: 0, pointsNo: -2 }
         ];
         let state = { days: {}, baseTotalScore: 0, lastDate: null };
         let activities = {}, todayScore = -2, totalScore = 0, chart = null;
-        let viewingDate = null; // null betekent vandaag
+        let viewingDate = null;
         
         const motivations = [
             { title: "💪 Focus op Beweging", text: "Regelmatig sporten verbetert niet alleen je fysieke gezondheid, maar ook je mentale welzijn. Probeer elke dag minstens 30 minuten te bewegen.", tip: "Start klein: 10 push-ups elke ochtend kan al een grote impact hebben!" },
             { title: "🥗 Voeding is de Basis", text: "Je lichaam is een tempel en voeding is de bouwsteen. Eet kleurrijk: hoe meer verschillende kleuren groenten en fruit op je bord, hoe beter.", tip: "Bereid je maaltijden voor op zondag, zo voorkom je ongezonde keuzes tijdens de week." },
             { title: "🧘 Mindfulness Moment", text: "Meditatie hoeft niet ingewikkeld te zijn. Zelfs 5 minuten per dag bewust ademhalen kan stress verminderen en je focus verbeteren.", tip: "Probeer de '4-7-8' ademhalingstechniek: 4 tellen inademen, 7 vasthouden, 8 uitademen." },
             { title: "😴 Slaap is Superkracht", text: "Goede slaap is essentieel voor herstel, geheugen en emotionele balans. Probeer een vast slaapritme aan te houden, zelfs in het weekend.", tip: "Zet je telefoon een uur voor bedtijd weg en dim het licht. Maak een rustgevend avondritueel." },
-            { title: "📚 Blijf Groeien", text: "Persoonlijke ontwikkeling is een levenslange reis. Of je nu een boek leest, een cursus volgt of een nieuwe vaardigheid leert - elke dag leren is elke dag groeien.", tip: "Lees 10 pagina's per dag. Dat zijn 3.650 pagina's per jaar - ongeveer 12 boeken!" },
-            { title: "🚫 Alcohol & Bewustzijn", text: "Geen alcohol drinken geeft je helderheid, betere slaap en meer energie. Bewuste keuzes maken over wanneer en hoeveel je drinkt is krachtig.", tip: "Zoek alternatieven: probeer alcoholvrije cocktails of sparkling water met fruit." },
+            { title: "⏰ Tijd voor Jezelf", text: "Tijd voor jezelf nemen is geen luxe, het is een noodzaak. Of je nu leest, creatief bezig bent, of gewoon even niets doet - jouw welzijn verdient aandacht.", tip: "Plan elke dag minimaal 15 minuten 'me-time' in je agenda, net zo belangrijk als andere afspraken!" },
+            { title: "🍫 Bewust Snacken", text: "Snacks zijn oké, maar bewuste keuzes maken het verschil. Luister naar je lichaam: heb je echt trek, of zoek je troost of afleiding?", tip: "Vervang ongezonde snacks door gezonde alternatieven: noten, fruit, groenten met hummus." },
             { title: "🎯 Consistentie Wint", text: "Rome is niet in één dag gebouwd. De kleine, dagelijkse keuzes die je maakt stapelen zich op tot grote veranderingen.", tip: "Focus op progress, niet perfectie. Een 'slechte' dag maakt je niet tot een slecht persoon." }
         ];
 
@@ -153,7 +153,6 @@
             const newDateKey = getDateKey(currentDate);
             const today = getTodayKey();
             
-            // Niet in de toekomst kijken
             if (newDateKey > today) return;
             
             viewingDate = newDateKey;
@@ -166,10 +165,8 @@
             const today = getTodayKey();
             const isToday = !viewingDate || viewingDate === today;
             
-            // Disable next button als we vandaag bekijken
             document.getElementById('nextDayBtn').disabled = isToday;
             
-            // Update datum display
             if (isToday) {
                 document.getElementById('viewingDateDisplay').textContent = 'Vandaag';
                 document.getElementById('viewingDateSub').textContent = formatDateNice(new Date());
@@ -214,7 +211,6 @@
 
             const today = getTodayKey(), last = state.lastDate;
             
-            // Update base score bij nieuwe dag
             if (last && last !== today) {
                 const yday = state.days[last];
                 if (yday) state.baseTotalScore += yday.score;
@@ -222,7 +218,6 @@
                 saveToStorage();
             }
             
-            // Laad vandaag
             viewingDate = null;
             const td = state.days[today];
             if (td) { 
@@ -236,7 +231,6 @@
                 saveToStorage();
             }
             
-            // Bereken totaalscore (alle dagen tot gisteren + vandaag)
             totalScore = state.baseTotalScore + todayScore;
             
             updateNavigationUI();
@@ -260,11 +254,9 @@
             const dateToUpdate = viewingDate || getTodayKey();
             state.days[dateToUpdate] = { date: dateToUpdate, activities: {...activities}, score: todayScore };
             
-            // Herbereken totaalscore
             if (!viewingDate || viewingDate === getTodayKey()) {
                 totalScore = state.baseTotalScore + todayScore;
             } else {
-                // Als we een oude dag bewerken, herbereken vanaf scratch
                 const sortedDates = Object.keys(state.days).sort();
                 let runningTotal = 0;
                 const today = getTodayKey();
@@ -316,7 +308,7 @@
             if (str.sport >= 7) m.push({ icon: '💪', text: `${str.sport} dagen sporten! Je bouwt serieuze momentum op.` });
             if (str.healthyEating >= 7) m.push({ icon: '🥗', text: `${str.healthyEating} dagen gezond eten! Je lichaam straalt het uit.` });
             if (str.meditation >= 7) m.push({ icon: '🧘', text: `${str.meditation} dagen meditatie! Je mindset wordt steeds sterker.` });
-            if (str.personalDevelopment >= 7) m.push({ icon: '📚', text: `${str.personalDevelopment} dagen persoonlijke ontwikkeling! Kennis is macht.` });
+            if (str.personalDevelopment >= 7) m.push({ icon: '⏰', text: `${str.personalDevelopment} dagen tijd voor jezelf! Je investeert in je welzijn.` });
             if (totalScore >= 50) m.push({ icon: '⭐', text: `Totaalscore van ${totalScore}! Je bent op de goede weg.` });
             document.getElementById('milestones').innerHTML = m.length > 0 ? m.map(x => `<div class="milestone"><div class="milestone-icon">${x.icon}</div><div>${x.text}</div></div>`).join('') : '';
         }
